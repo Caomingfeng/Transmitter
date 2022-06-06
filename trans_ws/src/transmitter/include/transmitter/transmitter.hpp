@@ -215,7 +215,7 @@ private:
   //线程循环的间隔
   int32_t tcp_thread_period_ms_ = 20;
   int32_t cmd_thread_period_ms_ = 40;
-  int32_t back_thread_period_ms_ = 1000;
+  int32_t back_thread_period_ms_ = 100;
   int32_t serial_thread_period_ms_ = 40;
 
   //线程开启标志位
@@ -997,12 +997,12 @@ private:
       //co mode
       if(mode == 5)
       {
-        if(in_team){
+        if(receive_leader){
           //follow team member
-          if(receive_leader){
+          //if(receive_leader){
             FollowControl();
             motion_cmd_pub_.publish(next_twist_cmd_);
-          }
+          //}
         }
         else{
           if(first_go){
@@ -1014,7 +1014,8 @@ private:
           }
           else if(goal_status == 3 && !first_go){
              write(tcp_socket_, "xfinish", sizeof("xfinish"));
-             in_team = true;
+             ROS_INFO("Send team done!");
+             //in_team = true;
           }
         }
       }
@@ -1654,12 +1655,15 @@ private:
         next_twist_cmd_.linear.x = -0.5;
         y_zoom = 1;
       }
-      else if(delta_x >= max_x){
+      else if(delta_x >= max_x && delta_x <= 1500){
         next_twist_cmd_.linear.x = max_linear_speed;
         y_zoom = 2;
       }
-
-      ROS_INFO_STREAM("delta_x, " << delta_x << " next_linear_speed, " << next_twist_cmd_.linear.x);
+      else if(delta_x > 1500){
+        next_twist_cmd_.linear.x = 0;
+        y_zoom = 1;
+      }
+      //ROS_INFO_STREAM("delta_x, " << delta_x << " next_linear_speed, " << next_twist_cmd_.linear.x);
     }
 
     double ratio_y;
@@ -1677,7 +1681,7 @@ private:
     {
       ration_speed = 1;
       angular_close = true;
-      next_twist_cmd_.angular.z = -0.15;
+      next_twist_cmd_.angular.z = -0.1;
     }
     else if (pos_delta_y <= 60 * y_zoom)
     {
