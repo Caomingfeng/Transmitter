@@ -1,0 +1,8 @@
+prefix=/home/ysc/trans_ws/devel
+
+Name: transmitter
+Description: Description of transmitter
+Version: 0.0.0
+Cflags: -I/home/ysc/trans_ws/src/transmitter/include
+Libs: -L/home/ysc/trans_ws/devel/lib 
+Requires: 

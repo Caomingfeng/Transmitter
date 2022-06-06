@@ -1,7 +1,0 @@
-<launch>
-        <!-- <param name = "host_ip" type = "string" value = "10.8.0.14"/> -->
-        <param name = "host_ip" type = "string" value = "10.8.0.14"/>
-        <param name = "my_id" type = "int" value = "1"/>
-        <rosparam file="/home/ysc/perception_map/jueying.yaml" command="load"/>
-        <node pkg="transmitter" type="console" name="console" output="screen" />
-</launch>

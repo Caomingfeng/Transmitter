@@ -1,0 +1,2 @@
+transmitter
+-DCATKIN_DEVEL_PREFIX=/home/ysc/trans_ws/devel -DCMAKE_INSTALL_PREFIX=/home/ysc/trans_ws/install -G Unix Makefiles
