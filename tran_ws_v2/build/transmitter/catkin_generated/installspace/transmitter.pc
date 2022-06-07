@@ -1,0 +1,8 @@
+prefix=/home/ysc/tran_ws_v2/install
+
+Name: transmitter
+Description: Description of transmitter
+Version: 0.0.0
+Cflags: -I/home/ysc/tran_ws_v2/install/include
+Libs: -L/home/ysc/tran_ws_v2/install/lib 
+Requires: 

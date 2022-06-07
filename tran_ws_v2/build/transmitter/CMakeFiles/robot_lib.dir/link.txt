@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -std=c++11  -shared -Wl,-soname,librobot_lib.so -o /home/ysc/tran_ws_v2/devel/lib/librobot_lib.so CMakeFiles/robot_lib.dir/src/transmitter.cpp.o 
