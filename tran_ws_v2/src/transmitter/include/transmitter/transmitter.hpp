@@ -220,7 +220,7 @@ private:
 
   double max_linear_speed = 1.7;    //max linear speed of the car
   double max_angle_speed = 0.61;   //max angular speed of the car
-  int co_x = 0, co_y =0;
+  // int co_x = 0, co_y =0;
 
   ros::Time last_time_;
   ros::Time current_time_;

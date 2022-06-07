@@ -611,15 +611,16 @@
             }
             else if(rx_msg[1] == 'p')
             {
+              int index = rx_len - 10;
               receive_leader = true;
               point_count = 0;
-              int f1_x = (int)(rx_msg[2] - 48) * 1000 + (int)(rx_msg[3] - 48) * 100 +
-                            (int)(rx_msg[4] - 48) * 10 + (int)(rx_msg[5] - 48);
-              int f1_y = (int)(rx_msg[6] - 48) * 1000 + (int)(rx_msg[7] - 48) * 100 +
-                                      (int)(rx_msg[8] - 48) * 10 + (int)(rx_msg[9] - 48);
-              double co_x = f1_x * resolution + origin_x;
-              double co_y = f1_y * resolution + origin_y; 
-              //Point_Map2Base(f_x, f_y);
+              int f1_x = (int)(rx_msg[index + 2] - 48) * 1000 + (int)(rx_msg[index + 3] - 48) * 100 +
+                            (int)(rx_msg[index + 4] - 48) * 10 + (int)(rx_msg[index + 5] - 48);
+              int f1_y = (int)(rx_msg[index + 6] - 48) * 1000 + (int)(rx_msg[index + 7] - 48) * 100 +
+                                      (int)(rx_msg[index + 8] - 48) * 10 + (int)(rx_msg[index + 9] - 48);
+              double f_x = f1_x * resolution + origin_x;
+              double f_y = f1_y * resolution + origin_y; 
+              Point_Map2Base(f_x, f_y);
               //Kalman(f_x, f_y); //                  
             }
           }
@@ -775,7 +776,7 @@
           //if(receive_leader){
             if(point_count <= 10){
               point_count++;
-              Point_Map2Base(co_x, co_y);
+              //Point_Map2Base(co_x, co_y);
               FollowControl();
               motion_cmd_pub_.publish(next_twist_cmd_);
             }
