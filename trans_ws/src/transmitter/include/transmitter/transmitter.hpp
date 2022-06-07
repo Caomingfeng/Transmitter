@@ -317,6 +317,8 @@ private:
   int static_count = 0;
   int t_count = 0;
   bool static_flag = false; //flag to justice if the car is stable
+  int tag_open_count = 0;
+  int point_count = 0;
 
   //跟随的x，y方向距离，x代表前后，y为左右
   double dis_x = 160;
@@ -595,8 +597,8 @@ private:
                 pos_mutex.lock();
                 current_x_position = 0;
                 current_y_position = 0;
-                next_x_position = 0;
-                next_y_position = 0;
+                next_x_position = dis_x;
+                next_y_position = dis_y;
                 pos_mutex.unlock();
               }
               break;
@@ -614,8 +616,8 @@ private:
                 pos_mutex.lock();
                 current_x_position = 0;
                 current_y_position = 0;
-                next_x_position = 0;
-                next_y_position = 0;
+                next_x_position = dis_x;
+                next_y_position = dis_y;
                 pos_mutex.unlock();
               }
               break;
@@ -825,8 +827,8 @@ private:
                       pos_mutex.lock();
                       current_x_position = 0;
                       current_y_position = 0;
-                      next_x_position = 0;
-                      next_y_position = 0;
+                      next_x_position = dis_x;
+                      next_y_position = dis_y;
                       pos_mutex.unlock(); 
                       my_team_id = (int)(rx_msg[k+1] - 48);  
                       break;            
@@ -841,6 +843,7 @@ private:
             else if(rx_msg[1] == 'p')
             {
               receive_leader = true;
+              point_count = 0;
               int f1_x = (int)(rx_msg[2] - 48) * 1000 + (int)(rx_msg[3] - 48) * 100 +
                             (int)(rx_msg[4] - 48) * 10 + (int)(rx_msg[5] - 48);
               int f1_y = (int)(rx_msg[6] - 48) * 1000 + (int)(rx_msg[7] - 48) * 100 +
@@ -908,6 +911,7 @@ private:
           next_twist_cmd_.linear.x = 0;
           next_twist_cmd_.angular.z = 0;
         }
+        //ROS_INFO_STREAM("tag open flag: " << tag_open_flag);
         //SendSpeed(); //send current speed to motion cpmputer
         motion_cmd_pub_.publish(next_twist_cmd_);
       }
@@ -1000,8 +1004,19 @@ private:
         if(receive_leader){
           //follow team member
           //if(receive_leader){
-            FollowControl();
-            motion_cmd_pub_.publish(next_twist_cmd_);
+            if(point_count <= 10){
+              point_count++;
+              FollowControl();
+              motion_cmd_pub_.publish(next_twist_cmd_);
+            }
+            else{
+                      pos_mutex.lock();
+                      current_x_position = 0;
+                      current_y_position = 0;
+                      next_x_position = dis_x;
+                      next_y_position = dis_y;
+                      pos_mutex.unlock(); 
+            }
           //}
         }
         else{
@@ -1259,7 +1274,7 @@ private:
       if (serial_.isOpen())
       {
         size_t length = serial_.available();
-        int tag_open_count = 0;
+        //int tag_open_count = 0;
         if (length != 0)
         {
           tag_open_flag = true;
@@ -1283,9 +1298,11 @@ private:
         //10次为收到tag信息认为tag处于关闭状态
         else if (length == 0)
         {
+          //ROS_INFO("Tag close!");
           tag_open_count++;
           if (tag_open_count >= 10)
           {
+            //ROS_INFO("Tag close 10!");
             tag_open_count = 0;
             tag_open_flag = false;
             pos_mutex.lock();
@@ -1510,11 +1527,11 @@ private:
              map_pos.point.x, map_pos.point.y, map_pos.point.z,
              base_pos.point.x, base_pos.point.y, base_pos.point.z, base_pos.header.stamp.toSec());
 
-    //pos_mutex.lock();
     double next_x_tem = base_pos.point.x * 100;
     double next_y_tem = base_pos.point.y * 100;
-    Kalman(next_x_tem, next_y_tem);
-    //pos_mutex.unlock();
+    if(next_x_tem <= 1500 && next_y_tem <= 1500){
+      Kalman(next_x_tem, next_y_tem);
+    }    
   }
 
   //将map中的一个点坐标转换到baselink坐标系
@@ -1671,19 +1688,19 @@ private:
     ratio_y = delta_y / max_y;
     double ration_speed;
     int pos_delta_y = abs(delta_y);
-    if (pos_delta_y <= 10)
+    if (pos_delta_y <= 20)
     {
       ration_speed = 1;
       angular_close = true;
       next_twist_cmd_.angular.z = 0;
     }
-    else if (pos_delta_y <= 30 * y_zoom)
+    else if (pos_delta_y <= 40 * y_zoom)
     {
       ration_speed = 1;
       angular_close = true;
-      next_twist_cmd_.angular.z = -0.1;
+      next_twist_cmd_.angular.z = -0.15;
     }
-    else if (pos_delta_y <= 60 * y_zoom)
+    else if (pos_delta_y <= 70 * y_zoom)
     {
       ration_speed = 0.9;
       next_twist_cmd_.angular.z = -0.3;
