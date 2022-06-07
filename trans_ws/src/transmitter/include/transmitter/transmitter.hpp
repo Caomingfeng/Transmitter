@@ -142,7 +142,7 @@ public:
     StartTcpThread();
     StartCmdThread();
     StartBackThread();
-    //StartSerialThread();
+    StartSerialThread();
     //StartFileTcpThread();
 
     // 50hz频率运行话题callback函数
@@ -215,7 +215,7 @@ private:
   //线程循环的间隔
   int32_t tcp_thread_period_ms_ = 20;
   int32_t cmd_thread_period_ms_ = 40;
-  int32_t back_thread_period_ms_ = 100;
+  int32_t back_thread_period_ms_ = 50;
   int32_t serial_thread_period_ms_ = 40;
 
   //线程开启标志位
@@ -534,6 +534,7 @@ private:
         //接收到控制信息
         if (rx_len > 0)
         {
+          //ROS_INFO_STREAM("Reveive control code:" << rx_msg);
           // 无人够状态控制指令
           if (rx_msg[0] == 'd')
           {
@@ -570,8 +571,8 @@ private:
               // }
               if (serial_keep_running_)
               {
-                serial_keep_running_ = false;
-                usleep(20);
+                // serial_keep_running_ = false;
+                // usleep(20);
                 pos_mutex.lock();
                 current_x_position = 0;
                 current_y_position = 0;
@@ -592,8 +593,8 @@ private:
               // }
               if (serial_keep_running_)
               {
-                serial_keep_running_ = false;
-                usleep(20);
+                // serial_keep_running_ = false;
+                // usleep(20);
                 pos_mutex.lock();
                 current_x_position = 0;
                 current_y_position = 0;
@@ -611,8 +612,8 @@ private:
               // }
               if (serial_keep_running_)
               {
-                serial_keep_running_ = false;
-                usleep(20);
+                // serial_keep_running_ = false;
+                // usleep(20);
                 pos_mutex.lock();
                 current_x_position = 0;
                 current_y_position = 0;
@@ -629,7 +630,7 @@ private:
               //   CancelNavi();
               // }
               dis_x = 120;
-              StartSerialThread();
+              //StartSerialThread();
               break;
             case 'h': // 实时位置 指令码
               //SendSimpleUDP(52, 0);
@@ -822,8 +823,8 @@ private:
                       mode = 5;  
                       in_team = false;
                       first_go = true;
-                      serial_keep_running_ = false;
-                      usleep(20);
+                      //serial_keep_running_ = false;
+                      //usleep(20);
                       pos_mutex.lock();
                       current_x_position = 0;
                       current_y_position = 0;
@@ -860,7 +861,7 @@ private:
           rx_len = 0;
         }
       }
-      usleep(period_ms * 1000);
+      // usleep(period_ms * 1000);
     }
     close(tcp_socket_);
     ROS_INFO("Tcp loop terminate!");
@@ -1402,7 +1403,9 @@ private:
       }
     }
     //对收到的坐标进行卡尔曼滤波
-    Kalman(recv_y, recv_x);
+    if(mode == 1){
+      Kalman(recv_y, recv_x);
+    }   
   }
 
   //无人狗简单指令的协议，指令码+指令值
