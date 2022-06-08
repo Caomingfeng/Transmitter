@@ -22,12 +22,14 @@ int main(int argc, char** argv)
     double pose[2];
     double resolution = 0;
     int my_id = 1;
+    int aoa_flag = 0;
     vector<double> p;
     n.getParam("/host_ip", host_ip);
     n.getParam("/resolution", resolution);
     n.getParam("/origin", p);
     n.getParam("/origin", pose[1]);
     n.getParam("/my_id", my_id);
+    n.getParam("/aoa_enable", aoa_flag);
     // ROS_INFO_STREAM("Get host_ip:"<<host_ip);
     // ROS_INFO_STREAM("Get resolution:"<<resolution);
     // ROS_INFO_STREAM("Get pose:"<< p[0] << ", " << p[1]);
@@ -38,7 +40,8 @@ int main(int argc, char** argv)
     //transmitter_.Open_Serial(device_name, baud_rate);
     transmitter_.SetTCP_para(host_ip);
     transmitter_.SetMap_para(p[0], p[1], resolution);
-    transmitter_.SetMyID(my_id);
+    transmitter_.SetRobot_para(my_id, aoa_flag);
+
     transmitter_.Run();
 
     return 0;

@@ -65,7 +65,7 @@ public:
 
   //功能：设置原始地图信息，包括左下角坐标和分辨率
   void SetMap_para(double x, double y, double res);
-  void SetMyID(int id_);
+  void SetRobot_para(int id_, int aoa_enable_);
 
   //功能：初始化ros订阅器和发布器
   void SetupSubscription();
@@ -146,6 +146,7 @@ private:
 
   // 判断AOA信标的开启状态
   bool tag_open_flag = false;
+  int aoa_enable = 0;
 
   //ros的发布器和订阅器
   ros::Publisher initial_pose_pub_;

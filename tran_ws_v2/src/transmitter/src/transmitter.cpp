@@ -38,10 +38,11 @@
   }
 
   //set robot ID
-  void Transmitter::SetMyID(int id_)
+  void Transmitter::SetRobot_para(int id_, int aoa_flag_)
   {
     my_id = id_;
-     ROS_INFO("Set machine ID: %d", my_id);
+    aoa_enable = aoa_flag_;
+     ROS_INFO("Set machine ID: %d, AoA enable: %d", my_id, aoa_enable);
   }
 
   //功能：初始化ros订阅器和发布器
@@ -81,7 +82,9 @@
     StartTcpThread();
     StartCmdThread();
     StartBackThread();
-    StartSerialThread();
+    if(aoa_enable){
+      StartSerialThread();
+    }  
     //StartFileTcpThread();
 
     // 50hz频率运行话题callback函数
