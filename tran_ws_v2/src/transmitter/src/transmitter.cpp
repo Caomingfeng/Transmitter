@@ -397,7 +397,7 @@
               // if(goal_status = 1){
               //   CancelNavi();
               // }
-              dis_x = 120;
+              dis_x = dis_man;
               //StartSerialThread();
               break;
             case 'h': // 实时位置 指令码
@@ -1504,10 +1504,10 @@
   void Transmitter::CoTeam(geometry_msgs::PointStamped *leader, uint8_t team_code, int team_id){
     geometry_msgs::PointStamped follower;
     if(team_code == '0'){
-      dis_x = 160;
+      dis_x = 200;
       dis_y = 0;
-      follower.point.x = leader->point.x - 1.6 * (team_id - 1) * cos(leader->point.z);
-      follower.point.y = leader->point.y - 1.6 * (team_id - 1) * sin(leader->point.z);
+      follower.point.x = leader->point.x - 2 * (team_id - 1) * cos(leader->point.z);
+      follower.point.y = leader->point.y - 2 * (team_id - 1) * sin(leader->point.z);
       follower.point.z = leader->point.z;
     }
     Publish_Goal_Co(follower.point.x, follower.point.y , follower.point.z);

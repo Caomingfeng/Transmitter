@@ -1,0 +1,62 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            04:38:19:7e:fa:0b:79:54:cd:d9:4e:b8:96:e1:c8:0a
+        Signature Algorithm: ecdsa-with-SHA256
+        Issuer: C=CN, ST=ZheJiang, L=HangZhou, O=Zjut, OU=My Organizational Unit, CN=mydserver/emailAddress=867624550@qq.com
+        Validity
+            Not Before: Mar 28 12:14:28 2022 GMT
+            Not After : Jun 30 12:14:28 2024 GMT
+        Subject: C=CN, ST=ZheJiang, L=HangZhou, O=Zjut, OU=My Organizational Unit, CN=mydclient2/emailAddress=867624550@qq.com
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:c9:75:0b:1e:84:55:19:42:06:a2:b1:98:da:7f:
+                    f3:bb:55:86:24:61:70:e2:90:0e:99:06:df:28:32:
+                    5c:c2:13:e1:9b:34:cf:83:f9:1e:7c:9b:16:d7:f1:
+                    c8:a2:73:0f:d5:c3:3b:b2:e3:9f:de:6f:db:23:ed:
+                    48:65:46:d8:22
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Subject Key Identifier: 
+                DE:A3:6E:2B:7C:15:3D:33:57:87:9B:60:B9:6C:92:4B:D9:F4:18:93
+            X509v3 Authority Key Identifier: 
+                keyid:F0:CB:35:53:55:D0:60:BA:1F:E4:02:2D:4C:9E:E3:DE:10:70:E9:B0
+                DirName:/C=CN/ST=ZheJiang/L=HangZhou/O=Zjut/OU=My Organizational Unit/CN=mydserver/emailAddress=867624550@qq.com
+                serial:35:08:69:0C:CE:CC:DA:0B:B7:0F:9D:EA:46:E3:FC:E0:5F:18:EF:4E
+
+            X509v3 Extended Key Usage: 
+                TLS Web Client Authentication
+            X509v3 Key Usage: 
+                Digital Signature
+    Signature Algorithm: ecdsa-with-SHA256
+         30:46:02:21:00:92:5b:38:10:97:d4:26:9e:21:32:a4:2f:56:
+         01:2d:71:de:99:e5:88:62:bf:c2:ce:c0:88:ec:51:31:da:de:
+         7a:02:21:00:a1:d9:9e:fa:cf:e5:30:3b:52:d4:3e:21:05:d6:
+         71:36:b6:62:0a:44:bd:62:a9:a5:ad:dd:99:c8:75:ef:62:a6
+-----BEGIN CERTIFICATE-----
+MIIDXzCCAwSgAwIBAgIQBDgZfvoLeVTN2U64luHICjAKBggqhkjOPQQDAjCBmDEL
+MAkGA1UEBhMCQ04xETAPBgNVBAgMCFpoZUppYW5nMREwDwYDVQQHDAhIYW5nWmhv
+dTENMAsGA1UECgwEWmp1dDEfMB0GA1UECwwWTXkgT3JnYW5pemF0aW9uYWwgVW5p
+dDESMBAGA1UEAwwJbXlkc2VydmVyMR8wHQYJKoZIhvcNAQkBFhA4Njc2MjQ1NTBA
+cXEuY29tMB4XDTIyMDMyODEyMTQyOFoXDTI0MDYzMDEyMTQyOFowgZkxCzAJBgNV
+BAYTAkNOMREwDwYDVQQIDAhaaGVKaWFuZzERMA8GA1UEBwwISGFuZ1pob3UxDTAL
+BgNVBAoMBFpqdXQxHzAdBgNVBAsMFk15IE9yZ2FuaXphdGlvbmFsIFVuaXQxEzAR
+BgNVBAMMCm15ZGNsaWVudDIxHzAdBgkqhkiG9w0BCQEWEDg2NzYyNDU1MEBxcS5j
+b20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAATJdQsehFUZQgaisZjaf/O7VYYk
+YXDikA6ZBt8oMlzCE+GbNM+D+R58mxbX8ciicw/Vwzuy45/eb9sj7UhlRtgio4IB
+KzCCAScwCQYDVR0TBAIwADAdBgNVHQ4EFgQU3qNuK3wVPTNXh5tguWySS9n0GJMw
+gdgGA1UdIwSB0DCBzYAU8Ms1U1XQYLof5AItTJ7j3hBw6bChgZ6kgZswgZgxCzAJ
+BgNVBAYTAkNOMREwDwYDVQQIDAhaaGVKaWFuZzERMA8GA1UEBwwISGFuZ1pob3Ux
+DTALBgNVBAoMBFpqdXQxHzAdBgNVBAsMFk15IE9yZ2FuaXphdGlvbmFsIFVuaXQx
+EjAQBgNVBAMMCW15ZHNlcnZlcjEfMB0GCSqGSIb3DQEJARYQODY3NjI0NTUwQHFx
+LmNvbYIUNQhpDM7M2gu3D53qRuP84F8Y704wEwYDVR0lBAwwCgYIKwYBBQUHAwIw
+CwYDVR0PBAQDAgeAMAoGCCqGSM49BAMCA0kAMEYCIQCSWzgQl9QmniEypC9WAS1x
+3pnliGK/ws7AiOxRMdreegIhAKHZnvrP5TA7UtQ+IQXWcTa2YgpEvWKppa3dmch1
+72Km
+-----END CERTIFICATE-----

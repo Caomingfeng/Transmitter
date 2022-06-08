@@ -207,8 +207,9 @@ private:
   int point_count = 0;
 
   //跟随的x，y方向距离，x代表前后，y为左右
-  double dis_x = 160;
+  double dis_x = 200;
   double dis_y = 0;
+  double dis_man = 120;
   //大于设定的最大跟随距离
   double max_x = 400;
   double max_y = 250;
