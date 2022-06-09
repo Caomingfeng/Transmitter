@@ -65,7 +65,7 @@ public:
 
   //功能：设置原始地图信息，包括左下角坐标和分辨率
   void SetMap_para(double x, double y, double res);
-  void SetRobot_para(int id_, int aoa_enable_);
+  void SetRobot_para(int id_, int aoa_enable_, int control_mode_);
 
   //功能：初始化ros订阅器和发布器
   void SetupSubscription();
@@ -212,7 +212,7 @@ private:
   double dis_y = 0;
   double dis_man = 120;
   //大于设定的最大跟随距离
-  double max_x = 400;
+  double max_x = 600;
   double max_y = 250;
   //小于设定的最大靠近距离
   double min_x = 200;

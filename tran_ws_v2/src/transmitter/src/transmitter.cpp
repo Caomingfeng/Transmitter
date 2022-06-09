@@ -38,11 +38,12 @@
   }
 
   //set robot ID
-  void Transmitter::SetRobot_para(int id_, int aoa_flag_)
+  void Transmitter::SetRobot_para(int id_, int aoa_flag_, int control_mode_)
   {
     my_id = id_;
     aoa_enable = aoa_flag_;
-     ROS_INFO("Set machine ID: %d, AoA enable: %d", my_id, aoa_enable);
+    mode = control_mode_;
+     ROS_INFO("Set machine ID: %d, AoA enable: %d, Control mode: %d", my_id, aoa_enable, mode);
   }
 
   //功能：初始化ros订阅器和发布器
@@ -183,7 +184,7 @@
     return 0;
   }
 
-  //第五回传线程，将本地地图发回到指挥端
+  //map回传线程，将本地地图发回到指挥端
   void Transmitter::StartFileTcpThread()
   {
     file_tcp_keep_running_ = true;
@@ -457,7 +458,7 @@
               }
               ROS_INFO_STREAM("Reveive control msg: translation.");
               break;
-            case 'z': //平移 指令码
+            case 'z': //emergency stop 指令码
               SendSimpleUDP(0x21010C0E, 0);
               ROS_INFO_STREAM("Reveive control msg: emergency stop.");
               break;
@@ -656,7 +657,7 @@
     ROS_INFO("Control thread is started!");
 
     // int goal_count;
-
+    int collision_dis = dis_x;
     while (cmd_keep_running_)
     {
       SendSimpleUDP(21, 0); //持续发送心跳包
@@ -774,12 +775,17 @@
       //co mode
       if(mode == 5)
       {
-        if(receive_leader){
+        if(in_team){
           //follow team member
-          //if(receive_leader){
+          if(receive_leader){
             if(point_count <= 10){
               point_count++;
               //Point_Map2Base(co_x, co_y);
+              //collision avoid 
+              collision_dis = next_x_position - current_x_position;
+              if(next_x_position <= 1 && collision_dis <= -10){
+                SendSimpleUDP(0x21010C0E, 0);
+              }
               FollowControl();
               motion_cmd_pub_.publish(next_twist_cmd_);
             }
@@ -791,7 +797,7 @@
                       next_y_position = dis_y;
                       pos_mutex.unlock(); 
             }
-          //}
+          }
         }
         else{
           if(first_go){
@@ -804,7 +810,7 @@
           else if(goal_status == 3 && !first_go){
              write(tcp_socket_, "xfinish", sizeof("xfinish"));
              ROS_INFO("Send team done!");
-             //in_team = true;
+             in_team = true;
           }
         }
       }
@@ -880,6 +886,7 @@
           //位置变动在5-50之间为有效数据
           int delta_x_pos = abs(next_x_position - current_x_position);
           int delta_y_pos = abs(next_y_position - current_x_position);
+
           if (delta_x_pos > 5 || delta_x_pos < 50)
           {
             current_x_position = next_x_position;
@@ -1439,12 +1446,12 @@
       }
       else if(delta_x < -10 && delta_x >= -dis_x/2)
       {
-        next_twist_cmd_.linear.x = -0.3;
+        next_twist_cmd_.linear.x = -0.15;
         y_zoom = 1;
       }
       else if(delta_x < -dis_x/2 && delta_x >= -dis_x)
       {
-        next_twist_cmd_.linear.x = -0.5;
+        next_twist_cmd_.linear.x = -0.3;
         y_zoom = 1;
       }
       else if(delta_x >= max_x && delta_x <= 1500){
