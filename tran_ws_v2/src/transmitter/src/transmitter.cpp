@@ -133,6 +133,9 @@
     {
       serial_.close();
     }
+    if(goal_status = 1){
+       CancelNavi();
+    }
     // std::terminate();
   }
 
@@ -379,9 +382,10 @@
               ROS_INFO_STREAM("Reveive control msg: hand control mode.");
               mode = 0;
               SendSimpleUDP(24, 0);
-              // if(goal_status = 1){
-              //   CancelNavi();
-              // }
+              if(goal_status = 1){
+                CancelNavi();
+              }
+              cooperation_flag = false;
               if (serial_keep_running_)
               {
                 // serial_keep_running_ = false;
@@ -562,6 +566,7 @@
                 else if(rx_msg[jj] == 'f'){
                   //自身为领队者
                    if(my_id == (int)(rx_msg[jj+1])){
+                      cooperation_flag = true;
                       break;
                    } 
                    //保存领队者位置用于编队
@@ -595,6 +600,7 @@
                       mode = 5;  
                       in_team = false;
                       first_go = true;
+                      cooperation_flag = true;
                       //serial_keep_running_ = false;
                       //usleep(20);
                       pos_mutex.lock();
@@ -657,6 +663,7 @@
     ROS_INFO("Control thread is started!");
 
     // int goal_count;
+    int f_count = 0;
     int collision_dis = dis_x;
     while (cmd_keep_running_)
     {
@@ -675,6 +682,12 @@
         //aoa标签打开时进行跟随控制
         if (tag_open_flag)
         {
+          // f_count++;
+          // if(f_count > 25){
+          //   f_count = 0;
+          //   FollowControl();
+          // }          
+          //Point_Base2Map)
           FollowControl();
         }
         //aoa标签关闭时速度为0
@@ -687,7 +700,7 @@
         }
         //ROS_INFO_STREAM("tag open flag: " << tag_open_flag);
         //SendSpeed(); //send current speed to motion cpmputer
-        motion_cmd_pub_.publish(next_twist_cmd_);
+       // motion_cmd_pub_.publish(next_twist_cmd_);
       }
       //巡逻模式:不循环时从初始点一圈回到初始点，循环时一直发布直到终止
       if (mode == 3) 
@@ -775,19 +788,24 @@
       //co mode
       if(mode == 5)
       {
-        if(in_team){
+        if(receive_leader){
           //follow team member
-          if(receive_leader){
+          //if(receive_leader){
             if(point_count <= 10){
               point_count++;
-              //Point_Map2Base(co_x, co_y);
               //collision avoid 
-              collision_dis = next_x_position - current_x_position;
-              if(next_x_position <= 1 && collision_dis <= -10){
-                SendSimpleUDP(0x21010C0E, 0);
-              }
+              //collision_dis = next_x_position - current_x_position;
+              // if(next_x_position <= 120 && collision_dis <= -10){
+              //   SendSimpleUDP(0x21010C0E, 0);
+              //   ROS_INFO("Too close, Emergency stop!");
+              // }
               FollowControl();
               motion_cmd_pub_.publish(next_twist_cmd_);
+              // f_count++;
+              // if(f_count > 25){
+              //   f_count = 0;
+              //   Point_Base2Map(next_x_position, next_y_position);
+              // }
             }
             else{
                       pos_mutex.lock();
@@ -797,7 +815,7 @@
                       next_y_position = dis_y;
                       pos_mutex.unlock(); 
             }
-          }
+          //}
         }
         else{
           if(first_go){
@@ -811,6 +829,7 @@
              write(tcp_socket_, "xfinish", sizeof("xfinish"));
              ROS_INFO("Send team done!");
              in_team = true;
+             usleep(50000);
           }
         }
       }
@@ -922,6 +941,7 @@
           {
             //小车为跟随状态，跟随当前tag位置
             follow(current_x_position, current_y_position);
+            //Point_Base2Map(current_x_position, current_y_position);
             //角度跟随接近时间隔发送角速度，更为稳定
             if (angular_close)
             {
@@ -1320,8 +1340,8 @@
 //将map中的一个点坐标转换到baselink坐标系
   void Transmitter::Point_Base2Map(int x_pos1, int y_pos1)
   {
-    double x_pos = x_pos1 / 100;
-    double y_pos = y_pos1 / 100;
+    double x_pos = (double)x_pos1 / 100;
+    double y_pos = (double)y_pos1 / 100;
     geometry_msgs::PointStamped map_pos;    //创建map一个点
     geometry_msgs::PointStamped base_pos;   //创建baselink一个点
     base_pos.header.frame_id = "base_link"; //将这个点绑定到雷达坐标系下
@@ -1337,9 +1357,11 @@
     // {
     //   nav_angle = -nav_angle;
     // }
+    ROS_INFO("follow pos: %d, %d", x_pos1, y_pos1);
+    ROS_INFO("follow pos: %f, %f", x_pos, y_pos);
     x_pos = x_pos - 1 * x_pos / distance;
     y_pos = y_pos - 1 * y_pos / distance;
-
+    
     base_pos.point.x = x_pos;
     base_pos.point.y = y_pos;
     // tf::TransformListener listener(ros::Duration(10))//等待10s，如果10s之后都还没收到消息，那么之前的消息就被丢弃掉。
@@ -1372,6 +1394,7 @@
     goal.pose.position.y = nav_y;
     goal.pose.orientation = quat;
     goal_pub_.publish(goal);
+    ROS_INFO_STREAM("Publish goal: " <<nav_x << ", "<< nav_y);
   }
 
 //发布当前点为导航点，方向设定为本机指向目标点的角度
@@ -1420,8 +1443,8 @@
     next_x_position = Kalman_XA;
     next_y_position = Kalman_XD;
     pos_mutex.unlock();
-    //std::cout<<"before kalman position"<<x_position<<","<<y_position<<std::endl;
-    //std::cout<<"Kalman position"<<next_x_position<<","<<next_y_position<<std::endl;
+    // std::cout<<"before kalman position"<<x_position<<","<<y_position<<std::endl;
+    // std::cout<<"Kalman position"<<next_x_position<<","<<next_y_position<<std::endl;
   }
 
   // 根据当前跟随目标相对与本机的x，y位置，对比设定的跟随距离以及最大跟随距离，
@@ -1444,16 +1467,22 @@
         next_twist_cmd_.linear.x = delta_x / max_x * max_linear_speed;
         y_zoom = 1 + delta_x / max_x;
       }
-      else if(delta_x < -10 && delta_x >= -dis_x/2)
+      else if(delta_x < -10 && delta_x >= -dis_x)
       {
-        next_twist_cmd_.linear.x = -0.15;
+        if(cooperation_flag)
+        {
+          next_twist_cmd_.linear.x = -0.2;
+        }
+        else{
+          next_twist_cmd_.linear.x = -delta_x / dis_x;
+        }
         y_zoom = 1;
       }
-      else if(delta_x < -dis_x/2 && delta_x >= -dis_x)
-      {
-        next_twist_cmd_.linear.x = -0.3;
-        y_zoom = 1;
-      }
+      // else if(delta_x < -dis_x/2 && delta_x >= -dis_x)
+      // {
+      //   next_twist_cmd_.linear.x = -0.3;
+      //   y_zoom = 1;
+      // }
       else if(delta_x >= max_x && delta_x <= 1500){
         next_twist_cmd_.linear.x = max_linear_speed;
         y_zoom = 2;
@@ -1476,13 +1505,13 @@
       angular_close = true;
       next_twist_cmd_.angular.z = 0;
     }
-    else if (pos_delta_y <= 40 * y_zoom)
+    else if (pos_delta_y <= 30 * y_zoom)
     {
       ration_speed = 1;
       angular_close = true;
       next_twist_cmd_.angular.z = -0.15;
     }
-    else if (pos_delta_y <= 70 * y_zoom)
+    else if (pos_delta_y <= 60 * y_zoom)
     {
       ration_speed = 0.9;
       next_twist_cmd_.angular.z = -0.3;

@@ -177,6 +177,7 @@ private:
   bool nav_done = true;
   bool first_nav = true;
   bool continue_flag = true;
+  bool cooperation_flag = false;
 
   //无人狗状态信息
   double battery = 0;
